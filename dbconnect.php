@@ -59,7 +59,7 @@ class Database {
                 reset_token VARCHAR(255) NULL,
                 reset_expiry DATETIME NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                role ENUM('admin', 'user') DEFAULT 'user',
+                role ENUM('admin', 'user', 'manager') DEFAULT 'user',
                 address VARCHAR(255) NULL,
                 city VARCHAR(100) NULL,
                 district VARCHAR(100) NULL,

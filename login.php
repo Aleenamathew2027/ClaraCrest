@@ -9,6 +9,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     try {
         $email = $_POST['email'];
         $password = $_POST['password'];
+
+        // Debugging: Check if the email and password are being received correctly
+        error_log("Email: $email, Password: $password");
+
+       
         
         // Use prepared statement to prevent SQL injection
         $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");

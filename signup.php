@@ -38,15 +38,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Proceed only if there are no errors
     if (empty($usernameErr) && empty($emailErr) && empty($numberErr) && empty($passwordErr) && empty($confirmPasswordErr)) {
-        // Check if email already exists
-        $check_stmt = $conn->prepare("SELECT id FROM users WHERE email = ? OR username = ?");
+        // Check if email or phone number already exists
+        $check_stmt = $conn->prepare("SELECT id FROM users WHERE email = ? OR username = ? OR phone = ?");
         if ($check_stmt) {
-            $check_stmt->bind_param("ss", $email, $username);
+            $check_stmt->bind_param("sss", $email, $username, $number);
             $check_stmt->execute();
             $result = $check_stmt->get_result();
 
             if ($result->num_rows > 0) {
-                $databaseErr = "Email or username already exists!";
+                $databaseErr = "Email, username, or phone number already exists!";
             } else {
                 // Hash password before storing
                 $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
@@ -79,6 +79,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ClaraCrest Signup</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
         .login-background {
             background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.8)),
@@ -142,12 +143,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </div>
             <?php endif; ?>
 
-            <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" class="space-y-6" autocomplete="off">
+            <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" class="space-y-6" autocomplete="off" onsubmit="return validateForm()">
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Username</label>
-                    <input type="text" name="username" 
+                    <input type="text" name="username" id="username"
                         class="input-field mt-1 block w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-black focus:border-black"
-                        value="<?php echo htmlspecialchars($username); ?>">
+                        value="<?php echo htmlspecialchars($username); ?>"
+                        onblur="validateUsername()">
+                    <p id="usernameError" class="mt-1 text-sm text-red-600"></p>
                     <?php if (!empty($usernameErr)): ?>
                         <p class="mt-1 text-sm text-red-600"><?php echo $usernameErr; ?></p>
                     <?php endif; ?>
@@ -155,9 +158,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Email</label>
-                    <input type="email" name="email" 
+                    <input type="email" name="email" id="email"
                         class="input-field mt-1 block w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-black focus:border-black"
                         value="<?php echo htmlspecialchars($email); ?>">
+                    <p id="emailError" class="mt-1 text-sm text-red-600"></p>
                     <?php if (!empty($emailErr)): ?>
                         <p class="mt-1 text-sm text-red-600"><?php echo $emailErr; ?></p>
                     <?php endif; ?>
@@ -165,9 +169,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Mobile Number</label>
-                    <input type="tel" name="number" 
+                    <input type="tel" name="number" id="phone"
                         class="input-field mt-1 block w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-black focus:border-black"
-                        value="<?php echo htmlspecialchars($number); ?>">
+                        value="<?php echo htmlspecialchars($number); ?>"
+                        onblur="validatePhone()">
+                    <p id="phoneError" class="mt-1 text-sm text-red-600"></p>
                     <?php if (!empty($numberErr)): ?>
                         <p class="mt-1 text-sm text-red-600"><?php echo $numberErr; ?></p>
                     <?php endif; ?>
@@ -177,12 +183,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <label class="block text-sm font-medium text-gray-700">Password</label>
                     <input type="password" 
                            name="password" 
+                           id="password"
                            class="input-field mt-1 block w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-black focus:border-black"
+                           onblur="validatePassword()"
                            onpaste="return false"
                            oncopy="return false"
                            oncut="return false"
-                           autocomplete="new-password"
-                           >
+                           autocomplete="new-password">
+                    <p id="passwordError" class="mt-1 text-sm text-red-600"></p>
                     <?php if (!empty($passwordErr)): ?>
                         <p class="mt-1 text-sm text-red-600"><?php echo $passwordErr; ?></p>
                     <?php endif; ?>
@@ -192,12 +200,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <label class="block text-sm font-medium text-gray-700">Confirm Password</label>
                     <input type="password" 
                            name="confirm-password" 
+                           id="confirmPassword"
                            class="input-field mt-1 block w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-black focus:border-black"
+                           onblur="validateConfirmPassword()"
                            onpaste="return false"
                            oncopy="return false"
                            oncut="return false"
-                           autocomplete="new-password"
-                           >
+                           autocomplete="new-password">
+                    <p id="confirmPasswordError" class="mt-1 text-sm text-red-600"></p>
                     <?php if (!empty($confirmPasswordErr)): ?>
                         <p class="mt-1 text-sm text-red-600"><?php echo $confirmPasswordErr; ?></p>
                     <?php endif; ?>
@@ -215,5 +225,196 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
         </div>
     </div>
+
+    <script>
+        $(document).ready(function() {
+            var isEmailBeingValidated = false;
+
+            // Trigger validation on input event for live feedback
+            $('#email').on('input', function() {
+                var email = $(this).val();
+                if (!isEmailBeingValidated) {
+                    validateEmail(email);
+                }
+            });
+
+            $('#username').on('input', validateUsername);
+            $('#phone').on('input', validatePhone);
+            $('#password').on('input', validatePassword);
+            $('#confirmPassword').on('input', validateConfirmPassword);
+
+            function validateEmail() {
+                var email = $('#email').val();
+                var emailError = $('#emailError');
+                emailError.text("");
+
+                if (email.trim() === "") {
+                    emailError.text("Email is required");
+                    return false;
+                }
+                if (email.includes(" ")) {
+                    emailError.text("Email cannot contain spaces");
+                    return false;
+                }
+
+                var emailRegex = /^[a-z][a-z0-9]*(?:[][a-z0-9]+)*@(gmail\.com|yahoo\.com)$/;
+                if (!emailRegex.test(email)) {
+                    emailError.text("Enter a valid email address");
+                    return false;
+                }
+
+                $.ajax({
+                    type: "POST",
+                    url: "check_availability.php",
+                    data: { 'email': email },
+                    success: function(response) {
+                        var data = JSON.parse(response);
+                        if (data.status === 'exists') {
+                            emailError.text('Email already exists');
+                        }
+                    }
+                });
+
+                return true;
+            }
+
+            function validateUsername() {
+                var username = $('#username').val();
+                var usernameError = $('#usernameError');
+                usernameError.text("");
+
+                if (username.trim() === "") {
+                    usernameError.text("Username is required");
+                    return false;
+                }
+
+                if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+                    usernameError.text("Username can only contain letters, numbers, and underscores");
+                    return false;
+                }
+
+                $.ajax({
+                    type: "POST",
+                    url: "check_availability.php",
+                    data: { 'username': username },
+                    success: function(response) {
+                        var data = JSON.parse(response);
+                        if (data.status === 'exists') {
+                            usernameError.text('Username already exists');
+                        }
+                    }
+                });
+
+                return true;
+            }
+
+            function validatePhone() {
+                var phone = $('#phone').val();
+                var phoneError = $('#phoneError');
+                phoneError.text("");
+
+                if (phone.trim() === "") {
+                    phoneError.text("Phone number is required");
+                    return false;
+                }
+
+                var phoneRegex = /^[6789]\d{9}$/;
+                if (!phoneRegex.test(phone)) {
+                    phoneError.text("Enter a valid 10-digit mobile number starting with 6, 7, 8, or 9");
+                    return false;
+                }
+
+                var repeatingDigitsRegex = /(\d)\1{9}/;
+                if (repeatingDigitsRegex.test(phone)) {
+                    phoneError.text("Phone number cannot contain all repeating digits");
+                    return false;
+                }
+
+                $.ajax({
+                    type: "POST",
+                    url: "check_availability.php",
+                    data: { 'number': phone },
+                    success: function(response) {
+                        var data = JSON.parse(response);
+                        if (data.status === 'exists') {
+                            phoneError.text('Phone number already exists');
+                        }
+                    }
+                });
+
+                return true;
+            }
+
+            function validatePassword() {
+                var password = $('#password').val();
+                var passwordError = $('#passwordError');
+                passwordError.text("");
+
+                if (password.trim() === "") {
+                    passwordError.text("Password is required");
+                    return false;
+                }
+
+                if (/\s/.test(password)) {
+                    passwordError.text("Password cannot contain spaces");
+                    return false;
+                }
+
+                if (password.length < 6) {
+                    passwordError.text("Password must be at least 6 characters long");
+                    return false;
+                }
+
+                var hasUppercase = /[A-Z]/.test(password);
+                var hasLowercase = /[a-z]/.test(password);
+                var hasDigit = /\d/.test(password);
+                var hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(password);
+
+                if (!(hasUppercase && hasLowercase && hasDigit && hasSpecialChar)) {
+                    passwordError.text("Password must contain uppercase, lowercase, number, and special character");
+                    return false;
+                }
+
+                return true;
+            }
+
+            function validateConfirmPassword() {
+                var password = $('#password').val();
+                var confirmPassword = $('#confirmPassword').val();
+                var confirmPasswordError = $('#confirmPasswordError');
+                confirmPasswordError.text("");
+
+                if (confirmPassword.trim() === "") {
+                    confirmPasswordError.text("Confirm Password is required");
+                    return false;
+                }
+
+                if (password !== confirmPassword) {
+                    confirmPasswordError.text("Passwords do not match");
+                    return false;
+                }
+
+                return true;
+            }
+
+            function validateForm() {
+                var isEmailValid = validateEmail();
+                var isUsernameValid = validateUsername();
+                var isPhoneValid = validatePhone();
+                var isPasswordValid = validatePassword();
+                var isConfirmPasswordValid = validateConfirmPassword();
+
+                return isEmailValid && isUsernameValid && isPhoneValid && 
+                       isPasswordValid && isConfirmPasswordValid;
+            }
+
+            // Update form submission
+            $('form').on('submit', function(e) {
+                if (!validateForm()) {
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
 </body>
 </html>

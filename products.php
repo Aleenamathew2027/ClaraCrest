@@ -271,7 +271,23 @@
 
         <?php
         if (isset($_GET['success'])) {
-            echo '<div class="alert alert-success">Product added successfully!</div>';
+            $message = '';
+            switch ($_GET['success']) {
+                case 'updated':
+                    $message = 'Product updated successfully!';
+                    break;
+                case 'deleted':
+                    $message = 'Product deleted successfully!';
+                    break;
+                default:
+                    $message = 'Product added successfully!';
+            }
+            echo '<div class="alert alert-success">' . $message . '</div>';
+        }
+
+        if (isset($_GET['error'])) {
+            $message = htmlspecialchars($_GET['error']);
+            echo '<div class="alert alert-danger">Error: ' . $message . '</div>';
         }
         ?>
 

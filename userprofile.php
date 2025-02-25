@@ -104,7 +104,7 @@ $stmt->close();
         <div class="flex min-h-screen">
             <!-- Sidebar -->
             <div class="w-64 bg-white shadow-lg p-6">
-                <h2 class="text-2xl font-bold mb-8">User Profile</h2>
+                <h2 class="text-2xl font-bold mb-8">Profile</h2>
                 <nav class="space-y-4">
                     <a href="home.php" class="flex items-center space-x-3 w-full p-2 rounded text-gray-600 hover:bg-orange-100 hover:text-orange-500">
                         <i class="fas fa-home"></i>
@@ -140,7 +140,8 @@ $stmt->close();
                         <div class="relative">
                             <img 
                                 src="<?php echo !empty($user['profile_image']) ? $user['profile_image'] : '/api/placeholder/150/150'; ?>"
-                                alt="  Profile"
+                              alt="  Profile"
+
                                 class="w-32 h-32 rounded-full object-cover"
                             />
                             <label class="absolute bottom-0 right-0 bg-orange-500 text-white p-2 rounded-full cursor-pointer hover:bg-orange-600">
@@ -155,7 +156,7 @@ $stmt->close();
                             </label>
                         </div>
                         <div>
-                            <h1 class="text-3xl font-bold mb-2">User Profile</h1>
+                            <h1 class="text-3xl font-bold mb-2"><?php echo htmlspecialchars($user['fullname']); ?></h1>
                             <p class="text-gray-600">Manage your account settings and preferences</p>
                         </div>
                     </div>

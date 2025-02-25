@@ -1,28 +1,40 @@
 <?php
+require_once 'dbconnect.php';
 
-// Establish database connection
-$conn = new mysqli("localhost", "your_actual_username", "your_actual_password", "database_name");
-
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+if (!isset($_GET['id'])) {
+    header("Location: products.php");
+    exit();
 }
 
-if (isset($_GET['id'])) {
-    $productId = intval($_GET['id']);
+try {
+    $db = Database::getInstance();
+    $conn = $db->getConnection();
     
-    // Prepare the SQL statement to delete the product
-    $query = "DELETE FROM products WHERE id = ?";
-    $stmt = $conn->prepare($query);
-    $stmt->bind_param("i", $productId);
+    $id = $_GET['id'];
     
-    if ($stmt->execute()) {
-        // Redirect back to products page with success message
-        header("Location: products.php?success=1");
+    // First, check if the product exists
+    $check_query = "SELECT id FROM products WHERE id = ?";
+    $check_stmt = $conn->prepare($check_query);
+    $check_stmt->bind_param("i", $id);
+    $check_stmt->execute();
+    $result = $check_stmt->get_result();
+    
+    if ($result->num_rows === 0) {
+        header("Location: products.php?error=product_not_found");
         exit();
-    } else {
-        echo '<div class="alert alert-danger">Error deleting product: ' . htmlspecialchars($stmt->error) . '</div>';
     }
     
-    $stmt->close();
-} 
+    // Delete the product
+    $delete_query = "DELETE FROM products WHERE id = ?";
+    $delete_stmt = $conn->prepare($delete_query);
+    $delete_stmt->bind_param("i", $id);
+    
+    if ($delete_stmt->execute()) {
+        header("Location: products.php?success=deleted");
+    } else {
+        header("Location: products.php?error=delete_failed");
+    }
+} catch (Exception $e) {
+    header("Location: products.php?error=" . urlencode($e->getMessage()));
+}
+exit(); 

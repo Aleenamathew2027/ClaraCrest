@@ -132,6 +132,17 @@ $products = fetchProductsFromDatabase();
     </style>
 </head>
 <body>
+    <header style="background-color: #006039; padding: 25px 40px; display: flex; justify-content: space-between; align-items: center;">
+        <a href="home.php" style="color: white; text-decoration: none; display: flex; align-items: center; font-size: 18px;">
+            <i class="fas fa-arrow-left"></i>
+            <span style="margin-left: 12px;">Back</span>
+        </a>
+        <a href="#" style="color: white; text-decoration: none; display: flex; align-items: center; font-size: 18px;">
+            <i class="far fa-heart"></i>
+            <span style="margin-left: 12px;">Favourites</span>
+        </a>
+    </header>
+    
     <div class="product-collection">
         <div class="collection-header">
             <h1>All models</h1>

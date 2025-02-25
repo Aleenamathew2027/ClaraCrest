@@ -4,7 +4,7 @@ session_start();
 if (isset($_SESSION['fullname'])) {
     // {{ edit_1 }} // Removed the echo statement for logged-in user
 } else {
-    echo "User is not logged in.";
+    // echo "User is not logged in."; // Commented out to prevent display
 }
 ?>
 <!DOCTYPE html>
@@ -161,7 +161,6 @@ if (isset($_SESSION['fullname'])) {
                     <!-- Navigation Links -->
                     <a href="#brands" class="text-gray-600 hover:text-gray-900">Brands</a>
                     <a href="#purchase" class="text-gray-600 hover:text-gray-900">Purchase</a>
-                    <a href="#contact" class="text-gray-600 hover:text-gray-900">Contact</a>
                     
                     <!-- Auth Buttons -->
                     <div class="flex items-center space-x-6">

@@ -381,7 +381,30 @@
             }
             ?>
 
-            <!-- Modify form action to post to same page -->
+            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+            <script>
+                $(document).ready(function() {
+                    $('#category').change(function() {
+                        var categoryId = $(this).val();
+                        if (categoryId) {
+                            $.ajax({
+                                url: 'fetch_subcategories.php',
+                                type: 'POST',
+                                data: {category_id: categoryId},
+                                success: function(data) {
+                                    $('#subcategory').html(data);
+                                },
+                                error: function() {
+                                    alert('Error fetching subcategories');
+                                }
+                            });
+                        } else {
+                            $('#subcategory').html('<option value="">Select a subcategory</option>');
+                        }
+                    });
+                });
+            </script>
+
             <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST" enctype="multipart/form-data">
                 <div class="form-group">
                     <label for="name">Product Name:</label>
@@ -421,6 +444,14 @@
                             echo "<option value=''>Error loading categories</option>";
                         }
                         ?>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="subcategory">Select Subcategory:</label>
+                    <select id="subcategory" name="subcategory_id" required>
+                        <option value="">Select a subcategory</option>
+                        <!-- Subcategories will be populated here -->
                     </select>
                 </div>
 

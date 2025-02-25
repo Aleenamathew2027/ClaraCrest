@@ -118,7 +118,7 @@ $total_users = count($users);
                     <?php foreach ($users as $user): ?>
                     <?php if ($user['role'] !== 'admin'): ?>
                     <tr class="border-t hover:bg-gray-50">
-                        <td class="py-4 px-4"><?php echo htmlspecialchars($user['id']); ?></td>
+                      <td class="py-4 px-4"><?php echo htmlspecialchars($user['id']); ?></td>
                         <td class="py-4 px-4"><?php echo htmlspecialchars($user['fullname']); ?></td>
                         <td class="py-4 px-4"><?php echo htmlspecialchars($user['email']); ?></td>
                         <td class="py-4 px-4"><?php echo htmlspecialchars($user['phone']); ?></td>
