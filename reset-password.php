@@ -6,7 +6,7 @@ require 'dbconnect.php';
 if (!isset($_SESSION['email']) || !isset($_SESSION['code_verified'])) {
     header("Location: forgot-password.php");
     exit();
-}
+} 
 
 if (isset($_POST['reset_password'])) {
     $password = mysqli_real_escape_string($conn, $_POST['password']);

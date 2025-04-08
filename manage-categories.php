@@ -218,9 +218,9 @@ $subcategories = $categoryManager->getSubcategories();
         <a href="managerreguser.php">Users</a>
         <a href="add-products.php">Add Product</a>
         <a href="products.php">Products</a>
-        <a href="view-orders.php">View Orders</a>
-        <a href="most-selling-products.php">Most Selling Products</a>
-        <a href="payment-details.php">Payment Details</a>
+        <a href="manager-vieworders.php">View Orders</a>
+        
+        <a href="manager-payment.php">Payment Details</a>
         <a href="logout.php">Logout</a>
     </div>
     <div class="content">

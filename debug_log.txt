@@ -1,0 +1,300 @@
+2025-03-15 18:00:03 - Request received: Array
+(
+    [category_id] => 14
+)
+
+2025-03-15 18:00:03 - Response: Array
+(
+    [0] => Array
+        (
+            [id] => 2
+            [name] => Smart watch
+        )
+
+    [1] => Array
+        (
+            [id] => 6
+            [name] => Classic
+        )
+
+)
+
+2025-03-15 18:00:35 - Request received: Array
+(
+    [category_id] => 15
+)
+
+2025-03-15 18:00:35 - Response: Array
+(
+    [0] => Array
+        (
+            [id] => 1
+            [name] => Luxury
+        )
+
+)
+
+2025-03-15 18:01:10 - Request received: Array
+(
+    [category_id] => 14
+)
+
+2025-03-15 18:01:10 - Response: Array
+(
+    [0] => Array
+        (
+            [id] => 2
+            [name] => Smart watch
+        )
+
+    [1] => Array
+        (
+            [id] => 6
+            [name] => Classic
+        )
+
+)
+
+2025-03-15 18:01:12 - Request received: Array
+(
+    [category_id] => 15
+)
+
+2025-03-15 18:01:12 - Response: Array
+(
+    [0] => Array
+        (
+            [id] => 1
+            [name] => Luxury
+        )
+
+)
+
+2025-03-15 18:01:43 - Request received: Array
+(
+    [category_id] => 14
+)
+
+2025-03-15 18:01:43 - Response: Array
+(
+    [0] => Array
+        (
+            [id] => 2
+            [name] => Smart watch
+        )
+
+    [1] => Array
+        (
+            [id] => 6
+            [name] => Classic
+        )
+
+)
+
+2025-03-15 18:02:31 - Request received: Array
+(
+    [category_id] => 15
+)
+
+2025-03-15 18:02:31 - Response: Array
+(
+    [0] => Array
+        (
+            [id] => 1
+            [name] => Luxury
+        )
+
+)
+
+2025-03-15 18:05:59 - Request received: Array
+(
+    [category_id] => 15
+)
+
+2025-03-15 18:05:59 - Response: Array
+(
+    [0] => Array
+        (
+            [id] => 1
+            [name] => Luxury
+        )
+
+)
+
+2025-03-15 18:08:31 - Request received: Array
+(
+    [category_id] => 15
+)
+
+2025-03-15 18:08:31 - Response: Array
+(
+    [0] => Array
+        (
+            [id] => 1
+            [name] => Luxury
+        )
+
+)
+
+2025-03-15 18:26:13 - Request received: Array
+(
+    [category_id] => 15
+)
+
+2025-03-15 18:26:13 - Response: Array
+(
+    [0] => Array
+        (
+            [id] => 1
+            [name] => Luxury
+        )
+
+)
+
+2025-03-15 18:26:35 - Request received: Array
+(
+    [category_id] => 14
+)
+
+2025-03-15 18:26:35 - Response: Array
+(
+    [0] => Array
+        (
+            [id] => 2
+            [name] => Smart watch
+        )
+
+    [1] => Array
+        (
+            [id] => 6
+            [name] => Classic
+        )
+
+)
+
+2025-03-15 18:35:03 - Request received: Array
+(
+    [category_id] => 15
+)
+
+2025-03-15 18:35:03 - Response: Array
+(
+    [0] => Array
+        (
+            [id] => 1
+            [name] => Luxury
+        )
+
+    [1] => Array
+        (
+            [id] => 11
+            [name] => adfg
+        )
+
+)
+
+2025-03-15 18:37:15 - Request received: Array
+(
+    [category_id] => 15
+)
+
+2025-03-15 18:37:15 - Response: Array
+(
+    [0] => Array
+        (
+            [id] => 1
+            [name] => Luxury
+        )
+
+    [1] => Array
+        (
+            [id] => 11
+            [name] => adfg
+        )
+
+)
+
+2025-03-15 18:38:44 - Request received: Array
+(
+    [category_id] => 15
+)
+
+2025-03-15 18:38:44 - Response: Array
+(
+    [0] => Array
+        (
+            [id] => 1
+            [name] => Luxury
+        )
+
+    [1] => Array
+        (
+            [id] => 11
+            [name] => adfg
+        )
+
+)
+
+2025-03-15 18:38:59 - Request received: Array
+(
+    [category_id] => 15
+)
+
+2025-03-15 18:38:59 - Response: Array
+(
+    [0] => Array
+        (
+            [id] => 1
+            [name] => Luxury
+        )
+
+    [1] => Array
+        (
+            [id] => 11
+            [name] => adfg
+        )
+
+)
+
+2025-03-15 18:39:24 - Request received: Array
+(
+    [category_id] => 15
+)
+
+2025-03-15 18:39:24 - Response: Array
+(
+    [0] => Array
+        (
+            [id] => 1
+            [name] => Luxury
+        )
+
+    [1] => Array
+        (
+            [id] => 11
+            [name] => adfg
+        )
+
+)
+
+2025-03-15 18:39:32 - Request received: Array
+(
+    [category_id] => 15
+)
+
+2025-03-15 18:39:32 - Response: Array
+(
+    [0] => Array
+        (
+            [id] => 1
+            [name] => Luxury
+        )
+
+    [1] => Array
+        (
+            [id] => 11
+            [name] => adfg
+        )
+
+)
+

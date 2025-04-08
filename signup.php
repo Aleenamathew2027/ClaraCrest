@@ -1,17 +1,21 @@
 <?php
 require_once 'dbconnect.php';
 
-$username = $email = $number = $password = $confirmPassword = $role = "";
+$username = $email = $number = $country_code = $password = $confirmPassword = $role = "";
 $usernameErr = $emailErr = $numberErr = $passwordErr = $confirmPasswordErr = "";
 $databaseErr = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = trim($_POST['username']);
     $email = trim($_POST['email']);
+    $country_code = trim($_POST['country_code']);
     $number = trim($_POST['number']);
     $password = $_POST['password'];
     $confirmPassword = $_POST['confirm-password'];
     $role = isset($_POST['role']) ? $_POST['role'] : 'buyer'; // Default to buyer if not set
+
+    // Combine country code and phone number
+    $full_phone = $country_code . $number;
 
     // Basic validation
     if (empty($username)) {
@@ -41,7 +45,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Check if email or phone number already exists
         $check_stmt = $conn->prepare("SELECT id FROM users WHERE email = ? OR username = ? OR phone = ?");
         if ($check_stmt) {
-            $check_stmt->bind_param("sss", $email, $username, $number);
+            $check_stmt->bind_param("sss", $email, $username, $full_phone);
             $check_stmt->execute();
             $result = $check_stmt->get_result();
 
@@ -54,7 +58,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 // Insert into database
                 $stmt = $conn->prepare("INSERT INTO users (fullname, email, phone, password, role, username) VALUES (?, ?, ?, ?, ?, ?)");
                 if ($stmt) {
-                    $stmt->bind_param("ssssss", $username, $email, $number, $hashedPassword, $role, $username);
+                    $stmt->bind_param("ssssss", $username, $email, $full_phone, $hashedPassword, $role, $username);
                     if ($stmt->execute()) {
                         header("Location: login.php");
                         exit();
@@ -169,10 +173,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Mobile Number</label>
-                    <input type="tel" name="number" id="phone"
-                        class="input-field mt-1 block w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-black focus:border-black"
-                        value="<?php echo htmlspecialchars($number); ?>"
-                        onblur="validatePhone()">
+                    <div class="flex">
+                        <select name="country_code" id="country_code" class="input-field mt-1 block w-1/3 px-2 py-3 border border-gray-300 rounded-l-md shadow-sm focus:ring-black focus:border-black">
+                            <option value="+91">+91 (India)</option>
+                            <option value="+1">+1 (USA/Canada)</option>
+                            <option value="+44">+44 (UK)</option>
+                            <option value="+61">+61 (Australia)</option>
+                            <option value="+65">+65 (Singapore)</option>
+                            <option value="+971">+971 (UAE)</option>
+                            <option value="+86">+86 (China)</option>
+                            <option value="+49">+49 (Germany)</option>
+                            <option value="+33">+33 (France)</option>
+                            <option value="+81">+81 (Japan)</option>
+                            <option value="+82">+82 (South Korea)</option>
+                            <option value="+7">+7 (Russia)</option>
+                        </select>
+                        <input type="tel" name="number" id="phone"
+                            class="input-field mt-1 block w-2/3 px-4 py-3 border border-gray-300 rounded-r-md shadow-sm focus:ring-black focus:border-black"
+                            value="<?php echo htmlspecialchars($number); ?>"
+                            onblur="validatePhone()">
+                    </div>
                     <p id="phoneError" class="mt-1 text-sm text-red-600"></p>
                     <?php if (!empty($numberErr)): ?>
                         <p class="mt-1 text-sm text-red-600"><?php echo $numberErr; ?></p>
@@ -309,6 +329,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
 
             function validatePhone() {
+                var countryCode = $('#country_code').val();
                 var phone = $('#phone').val();
                 var phoneError = $('#phoneError');
                 phoneError.text("");
@@ -318,10 +339,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     return false;
                 }
 
-                var phoneRegex = /^[6789]\d{9}$/;
-                if (!phoneRegex.test(phone)) {
-                    phoneError.text("Enter a valid 10-digit mobile number starting with 6, 7, 8, or 9");
-                    return false;
+                // Adjust validation based on country code
+                if (countryCode === "+91") {
+                    // Indian phone number validation
+                    var phoneRegex = /^[6789]\d{9}$/;
+                    if (!phoneRegex.test(phone)) {
+                        phoneError.text("Enter a valid 10-digit Indian mobile number starting with 6, 7, 8, or 9");
+                        return false;
+                    }
+                } else {
+                    // Generic validation for other countries
+                    if (!/^\d{6,15}$/.test(phone)) {
+                        phoneError.text("Enter a valid phone number (6-15 digits)");
+                        return false;
+                    }
                 }
 
                 var repeatingDigitsRegex = /(\d)\1{9}/;
@@ -330,10 +361,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     return false;
                 }
 
+                // When checking availability, use the full phone number
                 $.ajax({
                     type: "POST",
                     url: "check_availability.php",
-                    data: { 'number': phone },
+                    data: { 'number': countryCode + phone },
                     success: function(response) {
                         var data = JSON.parse(response);
                         if (data.status === 'exists') {

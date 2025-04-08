@@ -10,6 +10,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $email = $_POST['email'];
         $password = $_POST['password'];
 
+        // Check for manager credentials
+        if ($email === 'manager123@gmail.com' && $password === 'manager@123') {
+            $_SESSION['user_id'] = 'manager';
+            $_SESSION['fullname'] = 'Manager';
+            $_SESSION['role'] = 'manager';
+            $_SESSION['loggedin'] = true;
+            
+            // Log the manager login
+            $ip = $_SERVER['REMOTE_ADDR'];
+            $log_stmt = $conn->prepare("INSERT INTO login_logs (user_id, ip_address) VALUES ('manager', ?)");
+            $log_stmt->bind_param("s", $ip);
+            $log_stmt->execute();
+            
+            header("Location: manager-dashboard.php");
+            exit();
+        }
+
         // Debugging: Check if the email and password are being received correctly
         error_log("Email: $email, Password: $password");
 

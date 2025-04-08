@@ -19,7 +19,7 @@ if (!in_array($sort_column, $allowed_columns)) {
 }
 
 // Build the query with search and sorting
-$query = "SELECT id, fullname, email, phone, role, created_at 
+$query = "SELECT id, fullname, email, phone, role, created_at, status 
           FROM users 
           WHERE fullname LIKE ? OR email LIKE ? OR phone LIKE ?
           ORDER BY $sort_column $sort_order";
@@ -60,7 +60,8 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true || !isset($_
     exit();
 }
 
-// Fetch users from database
+// Remove or comment out this duplicate query
+/*
 try {
     $query = "SELECT id, fullname, email, phone, role, created_at FROM users ORDER BY created_at DESC";
     $result = $conn->query($query);
@@ -72,7 +73,12 @@ try {
     } else {
         throw new Exception("Error fetching users: " . $conn->error);
     }
+} catch (Exception $e) {
+    die("Error fetching users: " . $e->getMessage());
+}
+*/
 
+    // Keep these statistics queries
     // Get total users count
     $total_users = $conn->query("SELECT COUNT(*) as count FROM users")->fetch_assoc()['count'];
     
@@ -81,10 +87,6 @@ try {
     
     // Get recent logins count
     $recent_logins = $conn->query("SELECT COUNT(*) as count FROM login_logs WHERE login_time >= DATE_SUB(NOW(), INTERVAL 24 HOUR)")->fetch_assoc()['count'];
-    
-} catch (Exception $e) {
-    die("Error fetching users: " . $e->getMessage());
-}
 ?>
 
 <!DOCTYPE html>
@@ -118,13 +120,12 @@ try {
         <!-- Sidebar -->
         <div class="w-64 bg-gray-800 text-white p-6">
             <div class="space-y-4">
-                <a href="#dashboard" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">Dashboard</a>
+                <a href="admin-dashboard.php" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">Dashboard</a>
                 <a href="registereduser.php" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">Users</a>
                 <a href="admin-viewproduct.php" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">Products</a>
                 <a href="admin-categories.php" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">Category</a>
-                <a href="#orders" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">Orders</a>
-                <a href="#reports" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">Reports</a>
-                <a href="#settings" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">Settings</a>
+                <a href="admin-vieworders.php" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">Orders</a>
+                
             </div>
         </div>
 
@@ -234,33 +235,28 @@ try {
                             </tr>
                             <?php else: ?>
                                 <?php foreach ($users as $user): ?>
-                                <tr class="border-t hover:bg-gray-50">
-                                    <td class="py-4"><?php echo htmlspecialchars($user['id']); ?></td>
-                                    <td class="py-4"><?php echo htmlspecialchars($user['fullname']); ?></td>
-                                    <td class="py-4"><?php echo htmlspecialchars($user['email']); ?></td>
-                                    <td class="py-4"><?php echo htmlspecialchars($user['phone']); ?></td>
-                                    <td class="py-4">
-                                        <span class="px-2 py-1 <?php echo $user['role'] === 'admin' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'; ?> rounded-full">
-                                            <?php echo htmlspecialchars($user['role']); ?>
-                                        </span>
-                                    </td>
-                                    <td class="py-4"><?php echo date('M d, Y', strtotime($user['created_at'])); ?></td>
-                                    <td class="py-4">
-                                        <div class="flex space-x-2">
-                                            <a href="edit-user.php?id=<?php echo $user['id']; ?>" 
-                                               class="text-blue-600 hover:text-blue-800">
-                                                Edit
-                                            </a>
-                                            <?php if ($user['role'] !== 'admin'): ?>
-                                            <a href="delete-user.php?id=<?php echo $user['id']; ?>" 
-                                               onclick="return confirm('Are you sure you want to delete this user?')"
-                                               class="text-red-600 hover:text-red-800">
-                                                Delete
-                                            </a>
-                                            <?php endif; ?>
-                                        </div>
-                                    </td>
-                                </tr>
+                                    <?php if ($user['role'] !== 'admin'): ?>
+                                    <tr class="border-t hover:bg-gray-50">
+                                        <td class="py-4"><?php echo htmlspecialchars($user['id']); ?></td>
+                                        <td class="py-4"><?php echo htmlspecialchars($user['fullname']); ?></td>
+                                        <td class="py-4"><?php echo htmlspecialchars($user['email']); ?></td>
+                                        <td class="py-4"><?php echo htmlspecialchars($user['phone']); ?></td>
+                                        <td class="py-4">
+                                            <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full">
+                                                user
+                                            </span>
+                                        </td>
+                                        <td class="py-4"><?php echo date('M d, Y', strtotime($user['created_at'])); ?></td>
+                                        <td class="py-4">
+                                            <div class="flex space-x-2">
+                                                <button onclick="toggleStatus(<?php echo $user['id']; ?>)"
+                                                        class="px-3 py-1 rounded-full <?php echo $user['status'] ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'; ?>">
+                                                    <?php echo $user['status'] ? 'Active' : 'Inactive'; ?>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <?php endif; ?>
                                 <?php endforeach; ?>
                             <?php endif; ?>
                         </tbody>
@@ -300,6 +296,28 @@ try {
                 }
             }
         });
+
+        function toggleStatus(userId) {
+            // Add AJAX call to update user status
+            fetch('update-user-status.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    userId: userId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Reload the page to show updated status
+                    window.location.reload();
+                } else {
+                    alert('Error updating user status');
+                }
+            });
+        }
     </script>
 </body>
 </html>

@@ -7,7 +7,7 @@ require 'dbconnect.php'; // Ensure this is before any usage of $conn
 $search = isset($_GET['search']) ? $_GET['search'] : '';
 
 // Build the query with search
-$query = "SELECT id, fullname, email, phone, role, created_at 
+$query = "SELECT id, fullname, email, phone, role, created_at, status 
           FROM users 
           WHERE fullname LIKE ? OR email LIKE ? OR phone LIKE ?";
 
@@ -122,15 +122,17 @@ $total_users = count($users);
                         <td class="py-4 px-4"><?php echo htmlspecialchars($user['fullname']); ?></td>
                         <td class="py-4 px-4"><?php echo htmlspecialchars($user['email']); ?></td>
                         <td class="py-4 px-4"><?php echo htmlspecialchars($user['phone']); ?></td>
-                        <td class="py-4 px-4"><?php echo htmlspecialchars($user['role']); ?></td>
+                        <td class="py-4 px-4">
+                            <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full">
+                                user
+                            </span>
+                        </td>
                         <td class="py-4 px-4"><?php echo date('M d, Y', strtotime($user['created_at'])); ?></td>
                         <td class="py-4 px-4">
-                            <div class="flex space-x-2">
-                                <a href="edit-user.php?id=<?php echo $user['id']; ?>" class="bg-blue-500 text-white px-3 py-1 rounded-lg hover:bg-blue-600 transition duration-200">Edit</a>
-                                <?php if ($user['role'] !== 'admin'): ?>
-                                <a href="delete-user.php?id=<?php echo $user['id']; ?>" onclick="return confirm('Are you sure you want to delete this user?')" class="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 transition duration-200">Delete</a>
-                                <?php endif; ?>
-                            </div>
+                            <button onclick="toggleStatus(<?php echo $user['id']; ?>)"
+                                    class="px-3 py-1 rounded-full <?php echo $user['status'] ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'; ?>">
+                                <?php echo $user['status'] ? 'Active' : 'Inactive'; ?>
+                            </button>
                         </td>
                     </tr>
                     <?php endif; ?>
@@ -139,5 +141,28 @@ $total_users = count($users);
             </tbody>
         </table>
     </div>
+
+    <!-- Add this JavaScript before the closing </body> tag -->
+    <script>
+    function toggleStatus(userId) {
+        fetch('update-user-status.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                userId: userId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.reload();
+            } else {
+                alert('Error updating user status');
+            }
+        });
+    }
+    </script>
 </body>
 </html> 
