@@ -87,6 +87,37 @@ try {
     
     // Get recent logins count
     $recent_logins = $conn->query("SELECT COUNT(*) as count FROM login_logs WHERE login_time >= DATE_SUB(NOW(), INTERVAL 24 HOUR)")->fetch_assoc()['count'];
+
+// Add this before the HTML chart section
+try {
+    // Fetch user registration data for the last 6 months
+    $registration_query = "SELECT 
+        DATE_FORMAT(created_at, '%Y-%m') as month,
+        COUNT(*) as user_count
+        FROM users
+        WHERE created_at >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
+        GROUP BY DATE_FORMAT(created_at, '%Y-%m')
+        ORDER BY month ASC";
+    
+    $reg_result = $conn->query($registration_query);
+    
+    $months = [];
+    $counts = [];
+    
+    while($row = $reg_result->fetch_assoc()) {
+        // Format the month for display
+        $months[] = date('M Y', strtotime($row['month'] . '-01'));
+        $counts[] = $row['user_count'];
+    }
+    
+    $chart_data = [
+        'months' => $months,
+        'counts' => $counts
+    ];
+} catch (Exception $e) {
+    error_log("Chart Data Error: " . $e->getMessage());
+    $chart_data = ['months' => [], 'counts' => []];
+}
 ?>
 
 <!DOCTYPE html>
@@ -97,6 +128,7 @@ try {
     <title>ClaraCrest Admin Dashboard</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100">
     <!-- Admin Navigation -->
@@ -116,21 +148,46 @@ try {
     </nav>
 
     <!-- Dashboard Layout -->
-    <div class="flex h-screen pt-16">
+    <div class="container">
         <!-- Sidebar -->
-        <div class="w-64 bg-gray-800 text-white p-6">
-            <div class="space-y-4">
-                <a href="admin-dashboard.php" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">Dashboard</a>
-                <a href="registereduser.php" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">Users</a>
-                <a href="admin-viewproduct.php" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">Products</a>
-                <a href="admin-categories.php" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">Category</a>
-                <a href="admin-vieworders.php" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">Orders</a>
-                
-            </div>
+        <div class="sidebar">
+            <h2>Admin Dashboard</h2>
+            <ul>
+                <li>
+                    <a href="admin-dashboard.php" class="bg-blue-600">
+                        <i class="fas fa-home"></i>
+                        Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="registereduser.php">
+                        <i class="fas fa-users"></i>
+                        Users
+                    </a>
+                </li>
+                <li>
+                    <a href="admin-viewproduct.php">
+                        <i class="fas fa-box"></i>
+                        Products
+                    </a>
+                </li>
+                <li>
+                    <a href="admin-categories.php">
+                        <i class="fas fa-tags"></i>
+                        Categories
+                    </a>
+                </li>
+                <li>
+                    <a href="admin-order-view.php">
+                        <i class="fas fa-shopping-cart"></i>
+                        Orders
+                    </a>
+                </li>
+            </ul>
         </div>
 
         <!-- Main Content -->
-        <div class="flex-1 p-10 overflow-y-auto">
+        <div class="main-content">
             <!-- Stats Cards -->
             <div class="grid grid-cols-4 gap-6 mb-8">
                 <div class="bg-white rounded-lg shadow p-6">
@@ -267,32 +324,65 @@ try {
             <!-- Analytics Chart -->
             <div class="bg-white rounded-lg shadow p-6">
                 <h2 class="text-xl font-bold mb-4">User Registration Trends</h2>
-                <canvas id="userChart" height="100"></canvas>
+                <div style="height: 400px;">
+                    <canvas id="userChart"></canvas>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Initialize the chart with some sample data
+        // Initialize the chart with actual data from database
         const ctx = document.getElementById('userChart').getContext('2d');
         new Chart(ctx, {
             type: 'line',
             data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                labels: <?php echo json_encode($chart_data['months']); ?>,
                 datasets: [{
-                    label: 'New Users',
-                    data: [65, 59, 80, 81, 56, 55],
+                    label: 'New User Registrations',
+                    data: <?php echo json_encode($chart_data['counts']); ?>,
                     borderColor: 'rgb(59, 130, 246)',
-                    tension: 0.1
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    tension: 0.4,
+                    fill: true,
+                    borderWidth: 2,
+                    pointBackgroundColor: 'rgb(59, 130, 246)',
+                    pointRadius: 4,
+                    pointHoverRadius: 6
                 }]
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Monthly User Registration Trends'
+                    }
+                },
                 scales: {
                     y: {
-                        
-                        beginAtZero: true
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1,
+                            precision: 0
+                        },
+                        grid: {
+                            drawBorder: false
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
                     }
+                },
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
                 }
             }
         });
@@ -319,6 +409,56 @@ try {
             });
         }
     </script>
+
+    <style>
+    .sidebar {
+        width: 250px;
+        background: #2c3e50;
+        color: white;
+        padding: 20px;
+        position: fixed;
+        height: 100vh;
+    }
+
+    .sidebar h2 {
+        margin-bottom: 30px;
+        text-align: center;
+    }
+
+    .sidebar ul {
+        list-style: none;
+    }
+
+    .sidebar li {
+        margin: 15px 0;
+    }
+
+    .sidebar a {
+        color: white;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        transition: 0.3s;
+    }
+
+    .sidebar a:hover {
+        background: #34495e;
+        border-radius: 5px;
+    }
+
+    .sidebar i {
+        margin-right: 10px;
+        width: 20px;
+    }
+
+    .main-content {
+        flex: 1;
+        padding: 20px;
+        margin-left: 250px;
+        background: #f5f6fa;
+    }
+    </style>
 </body>
 </html>
 

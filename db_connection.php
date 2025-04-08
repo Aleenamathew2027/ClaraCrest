@@ -1,4 +1,4 @@
-<?php
+<!-- <?php
 // Database configuration
 $servername = "localhost"; // or your server name
 $username = "root";  // Change to your actual MySQL username (often "root" for XAMPP)
@@ -12,4 +12,4 @@ $conn = new mysqli($servername, $username, $password, $dbname);
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
-?> 
+?>  -->

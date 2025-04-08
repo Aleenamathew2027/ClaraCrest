@@ -355,29 +355,50 @@ include 'header.php';
                                 <input type="tel" name="phone" value="<?php echo htmlspecialchars($user['phone']); ?>" class="w-full p-2 border rounded focus:ring-2 focus:ring-orange-500 focus:border-orange-500" required>
                             </div>
 
+                            <!-- Address Fields (Reordered) -->
                             <div class="space-y-2">
-                                <label class="block text-sm font-medium text-gray-700">Address</label>
-                                <input type="text" name="address" value="<?php echo htmlspecialchars($user['address']); ?>" class="w-full p-2 border rounded focus:ring-2 focus:ring-orange-500 focus:border-orange-500" required>
-                            </div>
-
-                            <div class="space-y-2">
-                                <label class="block text-sm font-medium text-gray-700">City</label>
-                                <input type="text" name="city" value="<?php echo htmlspecialchars($user['city']); ?>" class="w-full p-2 border rounded focus:ring-2 focus:ring-orange-500 focus:border-orange-500" required>
+                                <label class="block text-sm font-medium text-gray-700">State</label>
+                                <select name="state" id="state" class="w-full p-2 border rounded focus:ring-2 focus:ring-orange-500 focus:border-orange-500" required>
+                                    <option value="">Select State</option>
+                                    <?php
+                                    $states = [
+                                        "Andhra Pradesh",
+                                        "Tamil Nadu",
+                                        "Kerala",
+                                        "Karnataka",
+                                        "Maharashtra",
+                                        "Gujarat"
+                                    ];
+                                    foreach ($states as $state) {
+                                        $selected = ($user['state'] == $state) ? 'selected' : '';
+                                        echo "<option value=\"" . htmlspecialchars($state) . "\" $selected>" . htmlspecialchars($state) . "</option>";
+                                    }
+                                    ?>
+                                </select>
                             </div>
 
                             <div class="space-y-2">
                                 <label class="block text-sm font-medium text-gray-700">District</label>
-                                <input type="text" name="district" value="<?php echo htmlspecialchars($user['district']); ?>" class="w-full p-2 border rounded focus:ring-2 focus:ring-orange-500 focus:border-orange-500" required>
+                                <select name="district" id="district" class="w-full p-2 border rounded focus:ring-2 focus:ring-orange-500 focus:border-orange-500" required>
+                                    <option value="">Select District</option>
+                                    <!-- Districts will be populated by JavaScript -->
+                                </select>
                             </div>
 
                             <div class="space-y-2">
-                                <label class="block text-sm font-medium text-gray-700">State</label>
-                                <input type="text" name="state" value="<?php echo htmlspecialchars($user['state']); ?>" class="w-full p-2 border rounded focus:ring-2 focus:ring-orange-500 focus:border-orange-500" required>
+                                <label class="block text-sm font-medium text-gray-700">City</label>
+                                <input type="text" name="city" value="<?php echo htmlspecialchars($user['city']); ?>" 
+                                       class="w-full p-2 border rounded focus:ring-2 focus:ring-orange-500 focus:border-orange-500" 
+                                       pattern="[A-Za-z\s]+" title="Please enter a valid city name"
+                                       required>
                             </div>
 
                             <div class="space-y-2">
                                 <label class="block text-sm font-medium text-gray-700">Pin Code</label>
-                                <input type="text" name="pincode" value="<?php echo htmlspecialchars($user['pincode']); ?>" class="w-full p-2 border rounded focus:ring-2 focus:ring-orange-500 focus:border-orange-500" required>
+                                <input type="text" name="pincode" value="<?php echo htmlspecialchars($user['pincode']); ?>" 
+                                       class="w-full p-2 border rounded focus:ring-2 focus:ring-orange-500 focus:border-orange-500" 
+                                       pattern="[0-9]{6}" title="Please enter a valid 6-digit pincode"
+                                       required>
                             </div>
 
                             <div class="col-span-2">
@@ -479,6 +500,81 @@ include 'header.php';
                 const event = new Event('input');
                 confirmPassword.dispatchEvent(event);
             }
+        });
+
+        // Add this before your existing JavaScript code
+        const stateDistricts = {
+            "Andhra Pradesh": [
+                "Anantapur", "Chittoor", "East Godavari", "Guntur", "Krishna", "Kurnool", "Prakasam", 
+                "Srikakulam", "Visakhapatnam", "Vizianagaram", "West Godavari", "YSR Kadapa"
+            ],
+            "Tamil Nadu": [
+                "Ariyalur", "Chennai", "Coimbatore", "Cuddalore", "Dharmapuri", "Dindigul", "Erode", 
+                "Kanchipuram", "Kanyakumari", "Karur", "Krishnagiri", "Madurai", "Nagapattinam", 
+                "Namakkal", "Nilgiris", "Perambalur", "Pudukkottai", "Ramanathapuram", "Salem", 
+                "Sivaganga", "Thanjavur", "Theni", "Thoothukudi", "Tiruchirappalli", "Tirunelveli", 
+                "Tiruppur", "Tiruvallur", "Tiruvannamalai", "Tiruvarur", "Vellore", "Viluppuram", 
+                "Virudhunagar"
+            ],
+            "Kerala": [
+                "Alappuzha", "Ernakulam", "Idukki", "Kannur", "Kasaragod", "Kollam", "Kottayam", 
+                "Kozhikode", "Malappuram", "Palakkad", "Pathanamthitta", "Thiruvananthapuram", 
+                "Thrissur", "Wayanad"
+            ],
+            "Karnataka": [
+                "Bagalkot", "Ballari", "Belagavi", "Bengaluru Rural", "Bengaluru Urban", "Bidar", 
+                "Chamarajanagar", "Chikballapur", "Chikkamagaluru", "Chitradurga", "Dakshina Kannada", 
+                "Davanagere", "Dharwad", "Gadag", "Hassan", "Haveri", "Kalaburagi", "Kodagu", "Kolar", 
+                "Koppal", "Mandya", "Mysuru", "Raichur", "Ramanagara", "Shivamogga", "Tumakuru", 
+                "Udupi", "Uttara Kannada", "Vijayapura", "Yadgir"
+            ],
+            "Maharashtra": [
+                "Ahmednagar", "Akola", "Amravati", "Aurangabad", "Beed", "Bhandara", "Buldhana", 
+                "Chandrapur", "Dhule", "Gadchiroli", "Gondia", "Hingoli", "Jalgaon", "Jalna", "Kolhapur", 
+                "Latur", "Mumbai City", "Mumbai Suburban", "Nagpur", "Nanded", "Nandurbar", "Nashik", 
+                "Osmanabad", "Palghar", "Parbhani", "Pune", "Raigad", "Ratnagiri", "Sangli", "Satara", 
+                "Sindhudurg", "Solapur", "Thane", "Wardha", "Washim", "Yavatmal"
+            ],
+            "Gujarat": [
+                "Ahmedabad", "Amreli", "Anand", "Aravalli", "Banaskantha", "Bharuch", "Bhavnagar", 
+                "Botad", "Chhota Udaipur", "Dahod", "Dang", "Devbhoomi Dwarka", "Gandhinagar", 
+                "Gir Somnath", "Jamnagar", "Junagadh", "Kheda", "Kutch", "Mahisagar", "Mehsana", 
+                "Morbi", "Narmada", "Navsari", "Panchmahal", "Patan", "Porbandar", "Rajkot", 
+                "Sabarkantha", "Surat", "Surendranagar", "Tapi", "Vadodara", "Valsad"
+            ]
+        };
+
+        // Function to update districts based on selected state
+        function updateDistricts() {
+            const stateSelect = document.getElementById('state');
+            const districtSelect = document.getElementById('district');
+            const selectedState = stateSelect.value;
+            const currentDistrict = '<?php echo htmlspecialchars($user['district'] ?? ''); ?>';
+            
+            // Clear existing options
+            districtSelect.innerHTML = '<option value="">Select District</option>';
+            
+            // Add new options based on selected state
+            if (selectedState && stateDistricts[selectedState]) {
+                stateDistricts[selectedState].forEach(district => {
+                    const option = document.createElement('option');
+                    option.value = district;
+                    option.textContent = district;
+                    if (district === currentDistrict) {
+                        option.selected = true;
+                    }
+                    districtSelect.appendChild(option);
+                });
+            }
+        }
+
+        // Add this to your existing document.addEventListener('DOMContentLoaded', ...)
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize districts dropdown
+            updateDistricts();
+            
+            // Add event listener for state change
+            document.getElementById('state').addEventListener('change', updateDistricts);
         });
     </script>
 </body>

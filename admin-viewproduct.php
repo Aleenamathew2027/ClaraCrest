@@ -6,69 +6,73 @@
     <title>View Products</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* Reuse existing styles for body and sidebar */
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        * {
             margin: 0;
-            min-height: 100vh;
-            background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)),
-                        url('/api/placeholder/1920/1080') center/cover fixed;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .container {
             display: flex;
+            min-height: 100vh;
         }
 
         .sidebar {
             width: 250px;
-            background-color: #2c3e50;
-            height: 100vh;
-            position: fixed;
-            left: 0;
-            top: 0;
+            background: #2c3e50;
             color: white;
-            padding-top: 20px;
+            padding: 20px;
+            position: fixed;
+            height: 100vh;
         }
 
-        .sidebar-header {
-            padding: 0 20px 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        .sidebar h2 {
+            margin-bottom: 30px;
             text-align: center;
         }
 
-        .sidebar-menu {
+        .sidebar ul {
             list-style: none;
-            padding: 0;
-            margin: 0;
         }
 
-        .sidebar-menu li {
-            margin: 5px 0;
+        .sidebar li {
+            margin: 15px 0;
         }
 
-        .sidebar-menu a {
+        .sidebar a {
             color: white;
             text-decoration: none;
-            padding: 12px 20px;
             display: flex;
             align-items: center;
-            transition: all 0.3s;
+            padding: 10px;
+            transition: 0.3s;
         }
 
-        .sidebar-menu a:hover {
-            background-color: rgba(255, 255, 255, 0.1);
+        .sidebar a:hover {
+            background: #34495e;
+            border-radius: 5px;
         }
 
-        .sidebar-menu i {
+        .sidebar i {
             margin-right: 10px;
             width: 20px;
-            text-align: center;
         }
 
         .main-content {
             flex: 1;
+            padding: 20px;
             margin-left: 250px;
-            padding: 40px 20px;
+            background: #f5f6fa;
         }
 
-        /* New table styles */
+        .content-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        /* Products table styles */
         .products-table {
             width: 100%;
             border-collapse: collapse;
@@ -107,151 +111,123 @@
             font-weight: 600;
         }
 
-        /* Responsive design */
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 60px;
-            }
+        .products-header {
+            margin-bottom: 20px;
+        }
 
-            .sidebar-header {
-                padding: 10px;
-            }
-
-            .sidebar-header h2,
-            .sidebar-menu span {
-                display: none;
-            }
-
-            .sidebar-menu a {
-                padding: 15px;
-                justify-content: center;
-            }
-
-            .sidebar-menu i {
-                margin: 0;
-            }
-
-            .main-content {
-                margin-left: 60px;
-            }
-
-            .products-table {
-                display: block;
-                overflow-x: auto;
-            }
+        .products-header h1 {
+            color: #2c3e50;
+            font-size: 24px;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="sidebar-header">
-            <h2>Admin Panel</h2>
-        </div>
-        <ul class="sidebar-menu">
-            <li>
-                <a href="dashboard.php">
-                    <i class="fas fa-home"></i>
-                    <span>Dashboard</span>
-                </a>
-            </li>
-            <li>
-                <a href="products.php">
-                    <i class="fas fa-box"></i>
-                    <span>Products</span>
-                </a>
-            </li>
-            <li>
-                <a href="orders.php">
-                    <i class="fas fa-shopping-cart"></i>
-                    <span>Orders</span>
-                </a>
-            </li>
-            <li>
-                <a href="customers.php">
-                    <i class="fas fa-users"></i>
-                    <span>Customers</span>
-                </a>
-            </li>
-            <li>
-                <a href="settings.php">
-                    <i class="fas fa-cog"></i>
-                    <span>Settings</span>
-                </a>
-            </li>
-            <li>
-                <a href="logout.php">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span>Logout</span>
-                </a>
-            </li>
-        </ul>
-    </div>
-
-    <!-- Main Content -->
-    <div class="main-content">
-        <div class="products-header">
-            <h1>Products Overview</h1>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h2>Admin Dashboard</h2>
+            <ul>
+                <li>
+                    <a href="admin-dashboard.php">
+                        <i class="fas fa-home"></i>
+                        Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="registereduser.php">
+                        <i class="fas fa-users"></i>
+                        Users
+                    </a>
+                </li>
+                <li>
+                    <a href="admin-viewproduct.php" class="bg-blue-600">
+                        <i class="fas fa-box"></i>
+                        Products
+                    </a>
+                </li>
+                <li>
+                    <a href="admin-categories.php">
+                        <i class="fas fa-tags"></i>
+                        Categories
+                    </a>
+                </li>
+                <li>
+                    <a href="admin-order-view.php">
+                        <i class="fas fa-shopping-cart"></i>
+                        Orders
+                    </a>
+                </li>
+            </ul>
         </div>
 
-        <?php
-        if (isset($_GET['success'])) {
-            echo '<div class="alert alert-success">Product added successfully!</div>';
-        }
-        ?>
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="content-container">
+                <div class="products-header">
+                    <h1>Products Overview</h1>
+                </div>
 
-        <table class="products-table">
-            <thead>
-                <tr>
-                    <th>Image</th>
-                    <th>Product Name</th>
-                    <th>Price</th>
-                    <th>Category</th>
-                    <th>Subcategory</th>
-                    <th>Description</th>
-                </tr>
-            </thead>
-            <tbody>
                 <?php
-                require_once 'dbconnect.php';
-                try {
-                    $db = Database::getInstance();
-                    $conn = $db->getConnection();
-
-                    $query = "SELECT p.*, c.name as category_name, s.name as subcategory_name 
-                             FROM products p 
-                             LEFT JOIN categories c ON p.category_id = c.id 
-                             LEFT JOIN subcategories s ON p.subcategory_id = s.id 
-                             ORDER BY p.created_at DESC";
-                    
-                    $result = $conn->query($query);
-
-                    if ($result->num_rows > 0) {
-                        while ($product = $result->fetch_assoc()) {
-                            ?>
-                            <tr>
-                                <td>
-                                    <img src="<?php echo htmlspecialchars($product['image_url']); ?>" 
-                                         alt="<?php echo htmlspecialchars($product['name']); ?>" 
-                                         class="product-image-small">
-                                </td>
-                                <td><?php echo htmlspecialchars($product['name']); ?></td>
-                                <td class="price">₹<?php echo number_format($product['price'], 2); ?></td>
-                                <td><?php echo htmlspecialchars($product['category_name']); ?></td>
-                                <td><?php echo htmlspecialchars($product['subcategory_name']); ?></td>
-                                <td><?php echo htmlspecialchars($product['description']); ?></td>
-                            </tr>
-                            <?php
-                        }
-                    } else {
-                        echo '<tr><td colspan="6" style="text-align: center;">No products found.</td></tr>';
-                    }
-                } catch (Exception $e) {
-                    echo '<tr><td colspan="6" class="alert alert-danger">Error: ' . htmlspecialchars($e->getMessage()) . '</td></tr>';
+                if (isset($_GET['success'])) {
+                    echo '<div class="alert alert-success">Product added successfully!</div>';
                 }
                 ?>
-            </tbody>
-        </table>
+
+                <table class="products-table">
+                    <thead>
+                        <tr>
+                            <th>Image</th>
+                            <th>Product Name</th>
+                            <th>Price</th>
+                            <th>Category</th>
+                            <th>Subcategory</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        require_once 'dbconnect.php';
+                        try {
+                            $db = Database::getInstance();
+                            $conn = $db->getConnection();
+
+                            $query = "SELECT p.*, c.name as category_name, s.name as subcategory_name 
+                                     FROM products p 
+                                     LEFT JOIN categories c ON p.category_id = c.id 
+                                     LEFT JOIN subcategories s ON p.subcategory_id = s.id 
+                                     ORDER BY p.created_at DESC";
+                            
+                            $result = $conn->query($query);
+
+                            if ($result->num_rows > 0) {
+                                while ($product = $result->fetch_assoc()) {
+                                    ?>
+                                    <tr>
+                                        <td>
+                                            <img src="<?php echo htmlspecialchars($product['image_url']); ?>" 
+                                                 alt="<?php echo htmlspecialchars($product['name']); ?>" 
+                                                 class="product-image-small">
+                                        </td>
+                                        <td><?php echo htmlspecialchars($product['name']); ?></td>
+                                        <td class="price">₹<?php echo number_format($product['price'], 2); ?></td>
+                                        <td><?php echo htmlspecialchars($product['category_name']); ?></td>
+                                        <td><?php echo htmlspecialchars($product['subcategory_name']); ?></td>
+                                        <td><?php echo htmlspecialchars($product['description']); ?></td>
+                                    </tr>
+                                    <?php
+                                }
+                            } else {
+                                echo '<tr><td colspan="6" style="text-align: center;">No products found.</td></tr>';
+                            }
+                        } catch (Exception $e) {
+                            echo '<tr><td colspan="6" class="alert alert-danger">Error: ' . htmlspecialchars($e->getMessage()) . '</td></tr>';
+                        }
+                        ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </body>
 </html> 

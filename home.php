@@ -375,41 +375,13 @@ if (isset($_SESSION['fullname'])) {
     
     </body>
 
-    <!-- Why Choose Us -->
-    <section class="py-20 bg-white">
-        <div class="container mx-auto px-6">
-            <h2 class="text-4xl font-bold text-center mb-16">Why Choose ChronoLuxe</h2>
-            <div class="grid grid-cols-4 gap-8 text-center">
-                <div>
-                    <img src="/api/placeholder/64/64" alt="Authentic" class="mx-auto mb-4">
-                    <h3 class="text-xl font-bold mb-2">100% Authentic</h3>
-                    <p class="text-gray-600">All watches certified authentic</p>
-                </div>
-                <div>
-                    <img src="/api/placeholder/64/64" alt="Insurance" class="mx-auto mb-4">
-                    <h3 class="text-xl font-bold mb-2">Fully Insured</h3>
-                    <p class="text-gray-600">Comprehensive rental insurance</p>
-                </div>
-                <div>
-                    <img src="/api/placeholder/64/64" alt="Service" class="mx-auto mb-4">
-                    <h3 class="text-xl font-bold mb-2">Expert Service</h3>
-                    <p class="text-gray-600">In-house watch specialists</p>
-                </div>
-                <div>
-                    <img src="/api/placeholder/64/64" alt="Delivery" class="mx-auto mb-4">
-                    <h3 class="text-xl font-bold mb-2">Secure Delivery</h3>
-                    <p class="text-gray-600">Insured worldwide shipping</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
+    
     <!-- Footer -->
     <footer class="bg-black text-white py-16">
         <div class="container mx-auto px-6">
             <div class="grid grid-cols-4 gap-8">
                 <div>
-                    <h3 class="text-xl font-bold mb-4">ChronoLuxe</h3>
+                    <h3 class="text-xl font-bold mb-4">ClaraCrest</h3>
                     <p class="text-gray-400">Your destination for luxury timepieces</p>
                 </div>
                 <div>
@@ -426,8 +398,8 @@ if (isset($_SESSION['fullname'])) {
                     <ul class="space-y-2 text-gray-400">
                         <li>123 Luxury Lane</li>
                         <li>New York, NY 10001</li>
-                        <li>contact@chronoluxe.com</li>
-                        <li>(555) 123-4567</li>
+                        <li>contact@claracrest.com</li>
+                        <li>+91 9876543210</li>
                     </ul>
                 </div>
                 <div>
